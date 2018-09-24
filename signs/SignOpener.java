@@ -2,6 +2,7 @@ package signs;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -79,7 +80,13 @@ public class SignOpener implements Listener{
 				
 				if(packet instanceof PacketPlayInUpdateSign) {
 					PacketPlayInUpdateSign ppius = (PacketPlayInUpdateSign) packet;
-					System.out.println(ppius.b()[0].getText());
+					String[] text = new String[] {
+							ppius.b()[0].getText(),
+							ppius.b()[1].getText(),
+							ppius.b()[2].getText(),
+							ppius.b()[3].getText()
+					};
+					Bukkit.getServer().getPluginManager().callEvent(new SignFinishedEvent(player.getName(), text));
 				}
 				super.channelRead(context, packet);
 			}

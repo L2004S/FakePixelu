@@ -31,7 +31,10 @@ public class Signs extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void SignFinished(SignFinishedEvent e) {
-		System.out.println("ok it finished?");
+		String[] result = e.getSignResult();
+		String line1 = result[0];
+		
+		e.getPlayer().sendMessage(line1);
 	}
 	
 	@EventHandler
