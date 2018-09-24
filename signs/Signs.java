@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Signs extends JavaPlugin implements Listener {
 	
-	SignOpener SO = new SignOpener(0, 100, 0, "This", "is", "", "annoying");
+	SignOpener SO = new SignOpener(0, 100, 0, "", "^^^^^^^^^^^^^^^^", "Enter your", "username here");
 	
 	@Override
 	public void onEnable() {

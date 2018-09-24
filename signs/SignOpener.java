@@ -2,21 +2,18 @@ package signs;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.SignChangeEvent;
 
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelPromise;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayInUpdateSign;
@@ -78,15 +75,17 @@ public class SignOpener implements Listener{
 		ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
 			
 			@Override
-			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
+			public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
 				
 				if(packet instanceof PacketPlayInUpdateSign) {
-					PacketPlayInUpdateSign pius = (PacketPlayInUpdateSign) packet;
-				
-					System.out.println("READ>> " + pius.b().toString());
-				
+					PacketPlayInUpdateSign ppius = (PacketPlayInUpdateSign) packet;
+					System.out.println(ppius.b()[0].getText());
 				}
-				
+				super.channelRead(context, packet);
+			}
+			
+			@Override
+			public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) throws Exception {
 				super.write(context, packet, channelPromise);
 			}
 		};
@@ -94,22 +93,6 @@ public class SignOpener implements Listener{
 		ChannelPipeline pipeline = ((CraftPlayer)player).getHandle().playerConnection.networkManager.channel.pipeline();
 		pipeline.addBefore("packet_handler", player.getName(), channelDuplexHandler);
 		injections.put(player, channelDuplexHandler);
-	}
-
-	@EventHandler
-	public void playerClosedSign(SignChangeEvent se) {
-		if(se.getBlock().getLocation().equals(new Location(se.getPlayer().getWorld(), x, y, z))) {
-			System.out.println("Result is line1: " + se.getLines()[0] + "  line2:" + se.getLines()[1] + "  line3:" + se.getLines()[2] + "  line4:" + se.getLines()[3]);
-			result = se.getLines();
-			se.setCancelled(true);
-
-			/*
-			 * Calls event you should be listening to
-			 */
-			SignFinishedEvent e = new SignFinishedEvent(se.getPlayer().getName(), result);
-			Bukkit.getServer().getPluginManager().callEvent(e);
-
-		}
 	}
 
 	private void sendPacket(Packet<?> packet, Player p) {
